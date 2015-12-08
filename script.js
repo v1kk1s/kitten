@@ -4,26 +4,18 @@
 
 Window.onload = (function() {
   var wrap = document.getElementById('blocks-wrap'),
-    puss = [];
+    filters = ['grayscale(1)',
+                'blur(5px)',
+                'saturate(500%)',
+                'sepia(1)',
+                'hue-rotate(180deg)',
+                'invert(1)'],
+    kitty = new Image();
+    kitty.src = 'img/kitty.jpg';
 
-  puss[0] = new Image();
-  puss[0].src = 'img/blue.jpg';
-  puss[1] = new Image();
-  puss[1].src = 'img/gray.jpg';
-  puss[2] = new Image();
-  puss[2].src = 'img/green.jpg';
-  puss[3] = new Image();
-  puss[3].src = 'img/navy.jpg';
-  puss[4] = new Image();
-  puss[4].src = 'img/red.jpg';
-  puss[5] = new Image();
-  puss[5].src = 'img/violet.jpg';
-  puss[6] = new Image();
-  puss[6].src = 'img/yellow.jpg';
 
   function click() {
     document.getElementById('punch').play();
-
     if (this.getAttribute('data-played') == 'false') {
       (setTimer.bind(this))();
       this.setAttribute('data-played', true);
@@ -31,12 +23,11 @@ Window.onload = (function() {
       (clearTimer.bind(this))();
       this.setAttribute('data-played', false);
     }
-
   }
 
   function setTimer() {
     this.timer = setInterval(function(self) {
-      (replaceImg.bind(self))(puss[Math.floor(Math.random()*puss.length)]);
+      (replaceImg.bind(self))();
     }, 500, this);
   }
 
@@ -45,17 +36,29 @@ Window.onload = (function() {
     this.timer = 0;
   }
 
-  function replaceImg (curr) {
-    this.innerHTML = "<img src="+curr.src +"/>";
+  function replaceImg () {
+    this.innerHTML = "<img style='"+ setFilter()+"' src="+kitty.src +"/>";
+  }
+
+  function setFilter() {
+    var currFilter = filters[Math.floor(Math.random()*filters.length)];
+    var filterClass = [
+      'filter:'+ currFilter,
+      '-webkit-filter:' + currFilter,
+      '-moz-filter:' + currFilter,
+      '-o-filter:' + currFilter,
+      '-ms-filter:' + currFilter
+    ];
+
+    return filterClass.join(";");
   }
 
 
   for (var i=0; i < 25; i++) {
-    var photo = puss[Math.floor(Math.random()*puss.length)];
     var div = document.createElement('div');
     div.className = "block-item";
     div.setAttribute('data-played', false);
-    div.innerHTML = "<img src="+photo.src +"/>";
+    div.innerHTML = "<img style='"+ setFilter()+"' src="+kitty.src +"/>";
 
     var currBlock = wrap.appendChild(div);
     currBlock.addEventListener('click', click);
