@@ -1,68 +1,73 @@
 /**
  * Created by viktoriya on 30.11.15.
  */
+var punch = document.getElementById('punch');
+var cheers = document.getElementById('cheers');
+var filters = ['grayscale',
+  'blur',
+  'saturate',
+  'sepia',
+  'hue',
+  'invert',
+  'none'];
 
-Window.onload = (function() {
-  var wrap = document.getElementById('blocks-wrap'),
-    filters = ['grayscale(1)',
-                'blur(5px)',
-                'saturate(500%)',
-                'sepia(1)',
-                'hue-rotate(180deg)',
-                'invert(1)'],
-    kitty = new Image();
-    kitty.src = 'img/kitty.jpg';
+function PunchApp(name, sound) {
+    this.kitty = new Image();
+    this.kitty.src = 'img/' + name;
+    this.wrap = document.getElementById('blocks-wrap');
+    this.sound = function() {
+      sound.play();
+    };
+}
 
-
-  function click() {
-    document.getElementById('punch').play();
-    if (this.getAttribute('data-played') == 'false') {
-      (setTimer.bind(this))();
-      this.setAttribute('data-played', true);
-    } else {
-      (clearTimer.bind(this))();
-      this.setAttribute('data-played', false);
-    }
-  }
-
-  function setTimer() {
-    this.timer = setInterval(function(self) {
-      (replaceImg.bind(self))();
-    }, 500, this);
-  }
-
-  function clearTimer() {
-    clearInterval(this.timer);
-    this.timer = 0;
-  }
-
-  function replaceImg () {
-    this.innerHTML = "<img style='"+ setFilter()+"' src="+kitty.src +"/>";
-  }
-
-  function setFilter() {
-    var currFilter = filters[Math.floor(Math.random()*filters.length)];
-    var filterClass = [
-      'filter:'+ currFilter,
-      '-webkit-filter:' + currFilter,
-      '-moz-filter:' + currFilter,
-      '-o-filter:' + currFilter,
-      '-ms-filter:' + currFilter
-    ];
-
-    return filterClass.join(";");
-  }
-
-
+PunchApp.prototype.createImgBlocks = function() {
   for (var i=0; i < 25; i++) {
     var div = document.createElement('div');
     div.className = "block-item";
     div.setAttribute('data-played', false);
-    div.innerHTML = "<img style='"+ setFilter()+"' src="+kitty.src +"/>";
+    div.innerHTML = "<img class='"+ this.setFilter()+"' src="+this.kitty.src +"/>";
 
-    var currBlock = wrap.appendChild(div);
-    currBlock.addEventListener('click', click);
+    var currBlock = this.wrap.appendChild(div);
+    currBlock.addEventListener('click', this.click);
+    currBlock.addEventListener('click', this.sound);
   }
+};
+
+PunchApp.prototype.click = function() {
+  if (this.getAttribute('data-played') == 'false') {
+    (PunchApp.prototype.setTimer.bind(this))();
+    this.setAttribute('data-played', true);
+  } else {
+    (PunchApp.prototype.clearTimer.bind(this))();
+    this.setAttribute('data-played', false);
+  }
+};
+
+PunchApp.prototype.setTimer = function() {
+  this.timer = setInterval(function(self) {
+    (PunchApp.prototype.replaceImg.bind(self))();
+  }, 500, this);
+};
+
+PunchApp.prototype.clearTimer = function() {
+  clearInterval(this.timer);
+  this.timer = 0;
+};
+
+PunchApp.prototype.replaceImg  = function() {
+  this.getElementsByTagName('img')[0].className = PunchApp.prototype.setFilter();
+};
+
+PunchApp.prototype.setFilter = function() {
+  return filters[Math.floor(Math.random()*filters.length)];
+}
 
 
+
+Window.onload = (function() {
+  var kabay = new PunchApp('kitty.jpg', punch);
+  kabay.createImgBlocks();
+
+  var christina = new PunchApp('xr.jpg', cheers);
+  christina.createImgBlocks();
 })();
